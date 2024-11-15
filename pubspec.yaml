@@ -13,7 +13,7 @@ dependencies:
   image: ^3.0.2
   path_provider: ^2.0.8
   ffmpeg_kit_flutter_min_gpl: ^4.5.1
-  permission_handler: ^8.1.4+2
+  permission_handler: ^11.0.0
 
 dev_dependencies:
   flutter_test:
