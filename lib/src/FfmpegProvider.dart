@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
-import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
+//import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/render_type.dart';
@@ -14,6 +16,9 @@ class FfmpegProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
 
+     final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
+
+    
     if (await Permission.storage.request().isGranted) {
       /// mp4 output
       String mp4Command =
@@ -23,7 +28,30 @@ class FfmpegProvider with ChangeNotifier {
       String gifCommand =
           '-r 50 -i ${Constants.imagesPath} -vf "scale=iw/2:ih/2" -y ${Constants.gifOutputPath}';
 
-      var response = await FFmpegKit.execute(
+
+ /// Replacing audio stream
+      /// -c:v copy -c:a aac -map 0:v:0 -map 1:a:0
+
+      /// To combine audio with video
+   //   String commandToExecute =
+     //     '-r 15 -f mp4 -i ${Constants.VIDEO_PATH} -f mp3 -i ${Constants.AUDIO_PATH} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -t $timeLimit -y ${Constants.OUTPUT_PATH}';
+
+      /// To combine audio with image
+      // String commandToExecute =
+      //     '-r 15 -f mp3 -i ${Constants.AUDIO_PATH} -f image2 -i ${Constants.IMAGE_PATH} -pix_fmt yuv420p -t $timeLimit -y ${Constants.OUTPUT_PATH}';
+
+      /// To combine audio with gif
+      // String commandToExecute = '-r 15 -f mp3 -i ${Constants
+      //     .AUDIO_PATH} -f gif -re -stream_loop 5 -i ${Constants.GIF_PATH} -y ${Constants
+      //     .OUTPUT_PATH}';
+
+      /// To combine audio with sequence of images
+      // String commandToExecute = '-r 30 -pattern_type sequence -start_number 01 -f image2 -i ${Constants
+      //     .IMAGES_PATH} -f mp3 -i ${Constants.AUDIO_PATH} -y ${Constants
+      //     .OUTPUT_PATH}';
+      
+
+      var response =  await _flutterFFmpeg.execute( /// await FFmpegKit
               renderType == RenderType.gif ? gifCommand : mp4Command)
           .then((rc) async {
         loading = false;
