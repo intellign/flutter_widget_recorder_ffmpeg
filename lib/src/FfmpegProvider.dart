@@ -10,7 +10,7 @@ import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/render_type.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart';
+import 'package:image/image.dart' as IMG;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
@@ -18,11 +18,11 @@ class FfmpegProvider with ChangeNotifier {
   bool loading = false, isPlaying = false;
 
   List<int>? generateGIF(List<Image> images) {
-    final Animation animation = Animation();
+    final IMG.Animation animation = IMG.Animation();
     for (Image image in images) {
       animation.addFrame(image);
     }
-    return encodeGifAnimation(animation);
+    return IMG.encodeGifAnimation(animation);
   }
 
   Future<Map<String, dynamic>> mergeIntoVideo(
@@ -50,7 +50,7 @@ class FfmpegProvider with ChangeNotifier {
      
       return {'success': false, 'msg': 'error.'};
     }
-
+    
 /*
     loading = true;
     notifyListeners();
