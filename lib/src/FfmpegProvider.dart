@@ -1,18 +1,57 @@
 // ignore_for_file: file_names
 
 //import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'dart:io';
+
+//////////////////////import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/render_type.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class FfmpegProvider with ChangeNotifier {
   bool loading = false, isPlaying = false;
 
+  List<int>? generateGIF(List<Image> images) {
+    final Animation animation = Animation();
+    for (Image image in images) {
+      animation.addFrame(image);
+    }
+    return encodeGifAnimation(animation);
+  }
+
   Future<Map<String, dynamic>> mergeIntoVideo(
-      {required RenderType renderType}) async {
+      {required RenderType renderType,
+      required List<File> imageFiles}) async {
+    List<Image> imageList0 = List<Image>.generate(
+        imageFiles.length, (index) => Image.file(imageFiles[index]));
+
+    List<int>? bytes = generateGIF(imageList0);
+    if (bytes != null) {
+      int timestamp = DateTime.now().millisecondsSinceEpoch.toInt();
+
+      final String dir =  (await getApplicationDocumentsDirectory()).path;
+      String filePath = '$dir/stories_creator$timestamp.gif';
+      File capturedFile = File(filePath);
+      final file = await capturedFile.writeAsBytes(bytes);
+     
+        return {
+          'success': true,
+          'msg': 'Widget was render successfully.',
+          'outPath': file.path
+        };
+      
+    } else {
+     
+      return {'success': false, 'msg': 'error.'};
+    }
+
+/*
     loading = true;
     notifyListeners();
 
@@ -79,5 +118,6 @@ class FfmpegProvider with ChangeNotifier {
     } else {
       return {'success': false, 'msg': 'unknown error.'};
     }
+    */
   }
 }
