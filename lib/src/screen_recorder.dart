@@ -93,6 +93,7 @@ class ScreenRecorderController {
   Future<Map<String,dynamic>> export({required RenderType renderType}) async {
     String dir;
     String imagePath;
+    List<File> imageFiles = [];
 
     /// get application temp directory
     Directory appDocDirectory = await getTemporaryDirectory();
@@ -117,6 +118,7 @@ class ScreenRecorderController {
       /// create image frame in the temp directory
       File capturedFile = File(imagePath);
       await capturedFile.writeAsBytes(pngBytes);
+      imageFiles.add(capturedFile);
     }
 
     /// clear frame list
@@ -124,7 +126,7 @@ class ScreenRecorderController {
 
     /// render frames.png to video/gif
     var response =
-        await FfmpegProvider().mergeIntoVideo(renderType: renderType);
+        await FfmpegProvider().mergeIntoVideo(renderType: renderType, imageFiles: imageFiles);
 
     /// return
     return response;
