@@ -90,10 +90,12 @@ class ScreenRecorderController {
   }
 
   /// export widget
-  Future<Map<String,dynamic>> export({required RenderType renderType}) async {
+  Future<Map<String, dynamic>> export({required RenderType renderType}) async {
     String dir;
     String imagePath;
     List<File> imageFiles = [];
+    List<List<int>> imageFilesBytes = [];
+    List<Size> imageFilesSize = [];
 
     /// get application temp directory
     Directory appDocDirectory = await getTemporaryDirectory();
@@ -115,21 +117,46 @@ class ScreenRecorderController {
 
       /// create temp path for every frame
       imagePath = '$dir/$i.png';
+
       /// create image frame in the temp directory
       File capturedFile = File(imagePath);
       await capturedFile.writeAsBytes(pngBytes);
+      final iii = await _calculateImageDimension(capturedFile);
+
       imageFiles.add(capturedFile);
+      imageFilesBytes.add(pngBytes);
+      imageFilesSize.add(iii);
     }
 
     /// clear frame list
     _frames.clear();
 
     /// render frames.png to video/gif
-    var response =
-        await FfmpegProvider().mergeIntoVideo(renderType: renderType, imageFiles: imageFiles);
+    var response = await FfmpegProvider().mergeIntoVideo(
+        renderType: renderType,
+        imageFiles: imageFiles,
+        imageFilesBytes: imageFilesBytes,
+        imageFilesSize: imageFilesSize);
 
     /// return
     return response;
+  }
+
+////new
+  Future<Size> _calculateImageDimension(File file) {
+    Completer<Size> completer = Completer();
+    // Image image = Image.network("https://i.sstatic.net/lkd0a.png");
+    Image image = Image.file(file);
+    image.image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (ImageInfo image, bool synchronousCall) {
+          var myImage = image.image;
+          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+          completer.complete(size);
+        },
+      ),
+    );
+    return completer.future;
   }
 }
 
