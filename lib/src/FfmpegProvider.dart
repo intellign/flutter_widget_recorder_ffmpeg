@@ -18,19 +18,16 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 class FfmpegProvider with ChangeNotifier {
   bool loading = false, isPlaying = false;
 
-
-
-  Future<Map<String, dynamic>> mergeIntoVideo(
-      {required RenderType renderType,}) async {
-   
-
+  Future<Map<String, dynamic>> mergeIntoVideo({
+    required RenderType renderType,
+  }) async {
+    print("FfmpegProviderrr");
 
     loading = true;
     notifyListeners();
 
     ///////final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
 
-    
     if (await Permission.storage.request().isGranted) {
       /// mp4 output
       String mp4Command =
@@ -40,13 +37,12 @@ class FfmpegProvider with ChangeNotifier {
       String gifCommand =
           '-r 50 -i ${Constants.imagesPath} -vf "scale=iw/2:ih/2" -y ${Constants.gifOutputPath}';
 
-
- /// Replacing audio stream
+      /// Replacing audio stream
       /// -c:v copy -c:a aac -map 0:v:0 -map 1:a:0
 
       /// To combine audio with video
-   //   String commandToExecute =
-     //     '-r 15 -f mp4 -i ${Constants.VIDEO_PATH} -f mp3 -i ${Constants.AUDIO_PATH} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -t $timeLimit -y ${Constants.OUTPUT_PATH}';
+      //   String commandToExecute =
+      //     '-r 15 -f mp4 -i ${Constants.VIDEO_PATH} -f mp3 -i ${Constants.AUDIO_PATH} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -t $timeLimit -y ${Constants.OUTPUT_PATH}';
 
       /// To combine audio with image
       // String commandToExecute =
@@ -61,9 +57,10 @@ class FfmpegProvider with ChangeNotifier {
       // String commandToExecute = '-r 30 -pattern_type sequence -start_number 01 -f image2 -i ${Constants
       //     .IMAGES_PATH} -f mp3 -i ${Constants.AUDIO_PATH} -y ${Constants
       //     .OUTPUT_PATH}';
-      
 
-      var response =  await FFmpegKit.execute( ///_flutterFFmpeg   /// await FFmpegKit
+      var response = await FFmpegKit.execute(
+
+              ///_flutterFFmpeg   /// await FFmpegKit
               renderType == RenderType.gif ? gifCommand : mp4Command)
           .then((rc) async {
         loading = false;
@@ -73,24 +70,24 @@ class FfmpegProvider with ChangeNotifier {
         debugPrint('FFmpeg process exited with rc ==> ${rc.getCommand()}');
         var res = await rc.getReturnCode();
 
- if (ReturnCode.isSuccess(res)) {
-
-    // SUCCESS
-          return {'success': true, 'msg': 'Widget was render successfully.', 'outPath':  renderType == RenderType.gif ? Constants.gifOutputPath : Constants.videoOutputPath};
-
-  } else if (ReturnCode.isCancel(res)) {
-
-    // CANCEL
+        if (ReturnCode.isSuccess(res)) {
+          // SUCCESS
+          return {
+            'success': true,
+            'msg': 'Widget was render successfully.',
+            'outPath': renderType == RenderType.gif
+                ? Constants.gifOutputPath
+                : Constants.videoOutputPath
+          };
+        } else if (ReturnCode.isCancel(res)) {
+          // CANCEL
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
-
-  } else {
-
-    // ERROR
+        } else {
+          // ERROR
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
+        }
 
-  }
-
-    /*    if (res!.getValue() == 0) {
+        /*    if (res!.getValue() == 0) {
           return {'success': true, 'msg': 'Widget was render successfully.', 'outPath':  renderType == RenderType.gif ? Constants.gifOutputPath : Constants.videoOutputPath};
         } else if (res.getValue() == 1) {
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
@@ -109,6 +106,5 @@ class FfmpegProvider with ChangeNotifier {
     } else {
       return {'success': false, 'msg': 'unknown error.'};
     }
-    
   }
 }
