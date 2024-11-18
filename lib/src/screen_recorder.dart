@@ -123,9 +123,7 @@ class ScreenRecorderController {
       await capturedFile.writeAsBytes(pngBytes);
       final iii = await _calculateImageDimension(capturedFile);
 
-      imageFiles.add(capturedFile);
-      imageFilesBytes.add(pngBytes);
-      imageFilesSize.add(iii);
+    
     }
 
     /// clear frame list
@@ -133,10 +131,7 @@ class ScreenRecorderController {
 
     /// render frames.png to video/gif
     var response = await FfmpegProvider().mergeIntoVideo(
-        renderType: renderType,
-        imageFiles: imageFiles,
-        imageFilesBytes: imageFilesBytes,
-        imageFilesSize: imageFilesSize);
+        renderType: renderType,);
 
     /// return
     return response;
