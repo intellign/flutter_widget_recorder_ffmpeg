@@ -14,7 +14,8 @@ dependencies:
   path_provider: ^2.0.8
  # ffmpeg_kit_flutter_min_gpl: ^4.5.1
  ### ffmpeg_kit_flutter_full: ^4.5.1
-  flutter_ffmpeg: ^0.4.2
+##  flutter_ffmpeg: ^0.4.2
+  ffmpeg_kit_flutter: ^6.0.3
   permission_handler: ^11.0.0
 
 dev_dependencies:
