@@ -4,7 +4,8 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+///import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
@@ -27,7 +28,7 @@ class FfmpegProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
 
-     final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
+    ///////final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
 
     
     if (await Permission.storage.request().isGranted) {
@@ -62,7 +63,7 @@ class FfmpegProvider with ChangeNotifier {
       //     .OUTPUT_PATH}';
       
 
-      var response =  await _flutterFFmpeg.execute( /// await FFmpegKit
+      var response =  await FFmpegKit.execute( ///_flutterFFmpeg   /// await FFmpegKit
               renderType == RenderType.gif ? gifCommand : mp4Command)
           .then((rc) async {
         loading = false;
@@ -72,13 +73,31 @@ class FfmpegProvider with ChangeNotifier {
         debugPrint('FFmpeg process exited with rc ==> ${rc.getCommand()}');
         var res = await rc.getReturnCode();
 
-        if (res!.getValue() == 0) {
+ if (ReturnCode.isSuccess(res)) {
+
+    // SUCCESS
+          return {'success': true, 'msg': 'Widget was render successfully.', 'outPath':  renderType == RenderType.gif ? Constants.gifOutputPath : Constants.videoOutputPath};
+
+  } else if (ReturnCode.isCancel(res)) {
+
+    // CANCEL
+          return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
+
+  } else {
+
+    // ERROR
+          return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
+
+  }
+
+    /*    if (res!.getValue() == 0) {
           return {'success': true, 'msg': 'Widget was render successfully.', 'outPath':  renderType == RenderType.gif ? Constants.gifOutputPath : Constants.videoOutputPath};
         } else if (res.getValue() == 1) {
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
         } else {
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
         }
+        */
       });
 
       return response;
