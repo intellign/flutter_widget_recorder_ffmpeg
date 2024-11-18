@@ -4,58 +4,26 @@
 import 'dart:io';
 import 'dart:async';
 
-//////////////////////import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/render_type.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as IMG;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class FfmpegProvider with ChangeNotifier {
   bool loading = false, isPlaying = false;
 
-  List<int>? generateGIF(List<IMG.Image> images) {
-    final IMG.Animation animation = IMG.Animation();
-    for (IMG.Image image in images) {
-      animation.addFrame(image);
-    }
-    return IMG.encodeGifAnimation(animation);
-  }
+
 
   Future<Map<String, dynamic>> mergeIntoVideo(
-      {required RenderType renderType,
-      required List<File> imageFiles,
-      required List<Size> imageFilesSize,
-      required List<List<int>> imageFilesBytes}) async {
-    List<IMG.Image> imageList0 =
-        List<IMG.Image>.generate(imageFiles.length, (index) {
-      return IMG.Image.fromBytes(imageFilesSize[index].width.toInt(),
-          imageFilesSize[index].height.toInt(), imageFilesBytes[index]);
-    });
+      {required RenderType renderType,}) async {
+   
 
-    List<int>? bytes = generateGIF(imageList0);
-    if (bytes != null) {
-      int timestamp = DateTime.now().millisecondsSinceEpoch.toInt();
 
-      final String dir = (await getApplicationDocumentsDirectory()).path;
-      String filePath = '$dir/stories_creator$timestamp.gif';
-      File capturedFile = File(filePath);
-      final file = await capturedFile.writeAsBytes(bytes);
-
-      return {
-        'success': true,
-        'msg': 'Widget was render successfully.',
-        'outPath': file.path
-      };
-    } else {
-      return {'success': false, 'msg': 'error.'};
-    }
-
-/*
     loading = true;
     notifyListeners();
 
@@ -122,6 +90,6 @@ class FfmpegProvider with ChangeNotifier {
     } else {
       return {'success': false, 'msg': 'unknown error.'};
     }
-    */
+    
   }
 }
