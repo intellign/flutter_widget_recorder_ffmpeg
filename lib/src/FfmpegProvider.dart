@@ -24,6 +24,12 @@ class FfmpegProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
 
+    /// get application temp directory
+    Directory appDocDirectory = await getTemporaryDirectory();
+    String dir = appDocDirectory.path;
+
+    basePath = "$dir/";
+
     ///////final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
 
     if (await Permission.storage.request().isGranted) {
