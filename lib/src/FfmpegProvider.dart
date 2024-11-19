@@ -77,13 +77,7 @@ class FfmpegProvider with ChangeNotifier {
                 : Constants.videoOutputPath
           };
         } else if (res.getValue() == 1) {
-          return {
-            'success': true,
-            'msg': 'Widget was render successfully.',
-            'outPath': renderType == RenderType.gif
-                ? Constants.gifOutputPath
-                : Constants.videoOutputPath
-          };
+          return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
         } else {
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
         }
