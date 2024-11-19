@@ -21,8 +21,6 @@ class FfmpegProvider with ChangeNotifier {
   Future<Map<String, dynamic>> mergeIntoVideo({
     required RenderType renderType,
   }) async {
-    print("FfmpegProviderrr");
-
     loading = true;
     notifyListeners();
 
@@ -70,8 +68,7 @@ class FfmpegProvider with ChangeNotifier {
         debugPrint('FFmpeg process exited with rc ==> ${rc.getCommand()}');
         var res = await rc.getReturnCode();
 
-        if (ReturnCode.isSuccess(res)) {
-          // SUCCESS
+        if (res!.getValue() == 0) {
           return {
             'success': true,
             'msg': 'Widget was render successfully.',
@@ -79,22 +76,17 @@ class FfmpegProvider with ChangeNotifier {
                 ? Constants.gifOutputPath
                 : Constants.videoOutputPath
           };
-        } else if (ReturnCode.isCancel(res)) {
-          // CANCEL
-          return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
-        } else {
-          // ERROR
-          return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
-        }
-
-        /*    if (res!.getValue() == 0) {
-          return {'success': true, 'msg': 'Widget was render successfully.', 'outPath':  renderType == RenderType.gif ? Constants.gifOutputPath : Constants.videoOutputPath};
         } else if (res.getValue() == 1) {
-          return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
+          return {
+            'success': true,
+            'msg': 'Widget was render successfully.',
+            'outPath': renderType == RenderType.gif
+                ? Constants.gifOutputPath
+                : Constants.videoOutputPath
+          };
         } else {
           return {'success': false, 'msg': 'Widget was render unsuccessfully.'};
         }
-        */
       });
 
       return response;
