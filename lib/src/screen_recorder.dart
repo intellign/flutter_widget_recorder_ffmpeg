@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_screen_recorder_ffmpeg/screen_recorder.dart';
 import 'dart:ui' as ui show Image, ImageByteFormat;
+import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -91,6 +92,8 @@ class ScreenRecorderController {
 
   /// export widget
   Future<Map<String, dynamic>> export({required RenderType renderType}) async {
+    int timestamp = DateTime.now().millisecondsSinceEpoch.toInt();
+
     String dir;
     String imagePath;
     List<File> imageFiles = [];
@@ -101,8 +104,14 @@ class ScreenRecorderController {
     Directory appDocDirectory = await getTemporaryDirectory();
     dir = appDocDirectory.path;
 
+    basePath = "$dir/";
+
     /// delete last directory
-    appDocDirectory.deleteSync(recursive: true);
+    if (appDocDirectory.existsSync()) {
+      try {
+        appDocDirectory.deleteSync(recursive: true);
+      } catch (e) {}
+    }
 
     /// create new directory
     appDocDirectory.create();
@@ -121,9 +130,6 @@ class ScreenRecorderController {
       /// create image frame in the temp directory
       File capturedFile = File(imagePath);
       await capturedFile.writeAsBytes(pngBytes);
-      final iii = await _calculateImageDimension(capturedFile);
-
-    
     }
 
     /// clear frame list
@@ -131,27 +137,11 @@ class ScreenRecorderController {
 
     /// render frames.png to video/gif
     var response = await FfmpegProvider().mergeIntoVideo(
-        renderType: renderType,);
+      renderType: renderType,
+    );
 
     /// return
     return response;
-  }
-
-////new
-  Future<Size> _calculateImageDimension(File file) {
-    Completer<Size> completer = Completer();
-    // Image image = Image.network("https://i.sstatic.net/lkd0a.png");
-    Image image = Image.file(file);
-    image.image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (ImageInfo image, bool synchronousCall) {
-          var myImage = image.image;
-          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-          completer.complete(size);
-        },
-      ),
-    );
-    return completer.future;
   }
 }
 
