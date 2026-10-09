@@ -2,7 +2,7 @@
 
 // ignore_for_file: file_names
 
-import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new_https/ffmpeg_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/constants.dart';
 import 'package:flutter_screen_recorder_ffmpeg/src/render_type.dart';
